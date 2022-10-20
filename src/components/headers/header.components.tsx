@@ -1,28 +1,30 @@
 import React from "react";
 import { headers } from "../../utils/default";
 
-interface HeaderProps {
+interface HeaderProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   title: string;
   href: string;
-  key?: string | number;
 }
 
-export class Header extends React.Component {
-  static Simple({ headerInfo = headers }: { headerInfo?: HeaderProps[] }) {
+export class Header {
+  static Simple({ headerInfo = headers }) {
     return (
       // display itens styling
       <div className="flex flex-wrap w-screen">
         {headerInfo.map((h, i) => (
-          <Header.Item key={i} title={h.title} href={h.href} />
+          <Header.Item
+            key={`${i}-${h.title.toLowerCase()}`}
+            title={h.title}
+            href={h.href}
+          />
         ))}
       </div>
     );
   }
 
-  static Item({ title, href, key }: HeaderProps) {
+  static Item({ title, href }: HeaderProps) {
     return (
-      <a key={key} href={href}>
-        {/* button styling */}
+      <a href={href}>
         <div className="p-2 font-semibold hover:bg-gray-100">{title}</div>
       </a>
     );
