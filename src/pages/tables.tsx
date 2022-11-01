@@ -1,14 +1,24 @@
-import { EditableCell } from "../components/data-tables/editable-cells";
-import { EditableSortedCells } from "../components/data-tables/editable-sorted-cells";
+import { useState } from "react";
+import { ToggleEditableCells } from "../components/data-tables/editable-cell-by-toggle";
 import { Header } from "../components/headers/header.components";
+import { Product } from "../types/data.types";
 import { data } from "../utils/default";
 
 export default function Tables() {
+  const [tableData, setTableData] = useState(
+    data.map((d, i) => {
+      return { ...new Product(d).inovuaDataSource() };
+    })
+  );
+
   return (
     <>
       <Header.Simple />
-      <EditableSortedCells data={data} />
-      <EditableCell data={data} />
+      <ToggleEditableCells dataset={tableData} />
+      {/* <DataGridInovua dataset={tableData} /> */}
+      {/* <EditableSortedCells data={data} /> */}
+      {/* <EditableCell data={data} /> */}
+      {/* <DataGridMui data={tableData} /> */}
     </>
   );
 }

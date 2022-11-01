@@ -32,10 +32,10 @@ export class Product implements IProduct {
     this.custo_unid = p.custo_unid;
   }
 
-  inovuaDataSource = () => {
+  inovuaDataSource(): IProduct {
     return {
       nome: this.nome,
-      quantidade: this.quantidade,
+      quantidade: this.quantidade || 0,
       codigo: this.codigo,
       marca: this.marca,
       vendas: this.vendas,
@@ -43,5 +43,5 @@ export class Product implements IProduct {
       estoque: this.estoque,
       custo_unid: this.custo_unid,
     };
-  };
+  }
 }
