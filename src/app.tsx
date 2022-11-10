@@ -3,6 +3,7 @@ import ErrorPage from "./error-page";
 import PageHeaders from "./pages/headers";
 import PageRadioButtons from "./pages/radiobuttons";
 import Root from "./pages/root";
+import Selectors from "./pages/selector";
 import Tables from "./pages/tables";
 
 const router = createBrowserRouter([
@@ -24,6 +25,11 @@ const router = createBrowserRouter([
   {
     path: "/tables",
     element: <Tables />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/selectors",
+    element: <Selectors />,
     errorElement: <ErrorPage />,
   },
 ]);

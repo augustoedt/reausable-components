@@ -15,6 +15,10 @@ const headers = [
     title: "Tables",
     href: "/tables",
   },
+  {
+    title: "Selector",
+    href: "/selectors",
+  },
 ];
 
 const data = [
