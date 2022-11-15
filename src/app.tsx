@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Header } from "./components/headers/header.components";
 import ErrorPage from "./error-page";
 import PageHeaders from "./pages/headers";
 import PageRadioButtons from "./pages/radiobuttons";
@@ -35,5 +36,10 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Header.Simple />
+      <RouterProvider router={router} />;
+    </>
+  );
 }

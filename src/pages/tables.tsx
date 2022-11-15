@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { ToggleEditableCells } from "../components/data-tables/editable-cell-by-toggle";
-import { Header } from "../components/headers/header.components";
+import { ToggleEditableCells } from "../components/data-tables/editable-custom-table/editable-cell-by-toggle";
 import { Product } from "../types/data.types";
 import { data } from "../utils/default";
 
@@ -13,7 +12,6 @@ export default function Tables() {
 
   return (
     <>
-      <Header.Simple />
       <ToggleEditableCells dataset={tableData} />
       {/* <DataGridInovua dataset={tableData} /> */}
       {/* <EditableSortedCells data={data} /> */}

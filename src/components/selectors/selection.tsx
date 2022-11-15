@@ -19,8 +19,15 @@ type SingleSelectProp = {
 
 type SelectProps = {
   options: SelectOption[];
+  hasClearOptions?: false;
 } & (SingleSelectProp | MutipleSelectProp);
-export function Selection({ multiple, value, onChange, options }: SelectProps) {
+export function Selection({
+  multiple,
+  value,
+  onChange,
+  options,
+  hasClearOptions,
+}: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function clearOptions() {
@@ -66,15 +73,17 @@ export function Selection({ multiple, value, onChange, options }: SelectProps) {
             ))
           : value?.label}
       </span>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          clearOptions();
-        }}
-        className="clear-btn"
-      >
-        &times;
-      </button>
+      {hasClearOptions ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            clearOptions();
+          }}
+          className="clear-btn"
+        >
+          &times;
+        </button>
+      ) : null}
       <div className="divider"></div>
       <div className="caret"></div>
       <ul className="options" style={{ display: isOpen ? "block" : "none " }}>

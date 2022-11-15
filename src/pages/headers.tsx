@@ -6,7 +6,6 @@ export default class PageHeaders extends React.Component {
   render() {
     return (
       <div>
-        <Header.Simple />
         <div>
           PAGE WITH MY SOME HEADERS
         </div>

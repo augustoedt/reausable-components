@@ -27,7 +27,6 @@ export default function Selectors() {
 
   return (
     <div>
-      <Header.Simple />
       <Selection options={options} value={value1} onChange={setValue1} />
       <Selection multiple options={options} value={value2} onChange={setValue2} />
     </div>
