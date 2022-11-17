@@ -1,73 +1,8 @@
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { IProduct } from "../../../types/data.types";
 import { Selection, SelectOption } from "../../selectors/selection";
-
-interface TableHeader {
-  name: string;
-  header: string;
-  editable?: boolean;
-  type?: string;
-}
-const pageSizeOptions: SelectOption[] = [
-  {
-    label: "30 items",
-    value: 30,
-  },
-  {
-    label: "50 items",
-    value: 50,
-  },
-  {
-    label: "100 items",
-    value: 100,
-  },
-  {
-    label: "200 items",
-    value: 200,
-  },
-];
-
-const headers: TableHeader[] = [
-  {
-    name: "quantidade",
-    header: "Quantidade",
-    editable: true,
-    type: "number",
-  },
-  {
-    name: "codigo",
-    header: "Codigo",
-  },
-  {
-    name: "nome",
-    header: "Nome",
-  },
-  {
-    name: "marca",
-    header: "Marca",
-  },
-  {
-    name: "vendas",
-    header: "Vendas",
-  },
-  {
-    name: "saida",
-    header: "Saida",
-  },
-  {
-    name: "estoque",
-    header: "Estoque",
-  },
-  {
-    name: "custo_unid",
-    header: "Custo/Unid",
-  },
-];
-
-interface TableValues {
-  rowData: IProduct;
-  id: string | undefined;
-}
+import { headers, pageSizeOptions } from "./table-config";
+import { Ordering, TableHeader } from "./table-entities";
 
 const initialRowData: IProduct = {
   quantidade: 0,
@@ -80,22 +15,20 @@ const initialRowData: IProduct = {
   custo_unid: 0,
 };
 
-type Ordering = {
-  name: string;
-  type: "asc" | "desc" | "none" | string;
-};
-
 export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
   const [pageSize, setPageSize] = useState<SelectOption>(pageSizeOptions[0]);
   const [data, setData] = useState(dataset);
-
   const p = new PaginatedData(data, Number(pageSize?.value));
   const [paginator, setPaginator] = useState(p);
   const [values, setValues] = useState(initialRowData);
   const [currentPage, setCurrentPage] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
   const [currentEditRow, setCurrentEditRow] = useState<string | undefined>();
-  const [ordering, setOrdering] = useState<Ordering | undefined>();
+  const [ordering, setOrdering] = useState<Ordering>({
+    order: "none",
+    name: "",
+    type: "",
+  });
 
   const handleEditClick = (
     event:
@@ -108,24 +41,39 @@ export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
     setCurrentEditRow(item.codigo);
   };
 
-  const update = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (ordering == undefined) {
-      console.log(ordering);
-      const newData = data.sort((p1, p2) => p2.nome.localeCompare(p1.nome));
-      const p = new PaginatedData(data, Number(pageSize?.value));
-      setOrdering({ name: "", type: "asc" });
+  // const sorting = sortedData({
+  //   data: data,
+  //   sorted: ordering,
+  // });
+  const update = (e: Ordering) => {
+    if (e.order == "desc") {
+      const newData = [...dataset];
+      if (e.type == "number") {
+        newData.sort((p1, p2) => (p1 as any)[e.name] - (p2 as any)[e.name]);
+      }
+      if (e.type == "string") {
+        newData.sort((p1, p2) => p1.nome.localeCompare(p2.nome));
+      }
+      setData(newData);
+      const p = new PaginatedData(newData, Number(pageSize?.value));
+      setOrdering(e);
       setPaginator(p);
-    } else if ((ordering.type = "asc")) {
-      console.log(ordering);
-      const newData = data.sort((p1, p2) => p1.nome.localeCompare(p2.nome));
-      const p = new PaginatedData(data, Number(pageSize?.value));
-      setOrdering({ name: "", type: "desc" });
+    } else if (e.order == "asc") {
+      const newData = [...dataset];
+      if (e.type == "number") {
+        newData.sort((p1, p2) => (p2 as any)[e.name] - (p1 as any)[e.name]);
+      }
+      if (e.type == "string") {
+        newData.sort((p1, p2) => p2.nome.localeCompare(p1.nome));
+      }
+      const p = new PaginatedData(newData, Number(pageSize?.value));
+      setData(newData);
+      setOrdering(e);
       setPaginator(p);
-    } else if ((ordering.type = "desc")) {
-      console.log(ordering);
-      const p = new PaginatedData(dataset, Number(pageSize?.value));
-      setOrdering(undefined);
+    } else if (e.order == "none") {
+      setData([...dataset]);
+      const p = new PaginatedData([...dataset], Number(pageSize?.value));
+      setOrdering(e);
       setPaginator(p);
     }
   };
@@ -150,15 +98,14 @@ export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
     const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
         if (currentEditRow) {
-          const index = paginator.slicedData[currentPage].findIndex(
+          const index = paginator.slicedData[currentPage - 1].findIndex(
             (v) => v.codigo == currentEditRow
           );
-          console.log(index);
           if (index == paginator.slicedData[currentPage].length - 1) {
-            setCurrentEditRow(paginator.slicedData[currentPage][0].codigo);
+            setCurrentEditRow(paginator.slicedData[currentPage - 1][0].codigo);
           }
           setCurrentEditRow(
-            paginator.slicedData[currentPage][index + 1].codigo
+            paginator.slicedData[currentPage - 1][index + 1].codigo
           );
         }
       }
@@ -190,9 +137,6 @@ export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
             setPaginator(new PaginatedData(data, Number(e?.value)));
           }}
         />
-        <button onClick={update} className="shadow-md px-4 py-1">
-          Sort
-        </button>
       </div>
       <div className="flex gap-1 border-2 select-none">
         {paginationRange.map((d) =>
@@ -216,16 +160,26 @@ export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
         <thead>
           <tr>
             <th className="px-2">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                onChange={(e) => {
+                  if (selected.length > 0) {
+                    setSelected([]);
+                  }
+                  if (selected.length == 0) {
+                    const newSelection: string[] = data.map((d) => d.codigo);
+                    setSelected(newSelection);
+                  }
+                }}
+                checked={selected.length > 0}
+              />
             </th>
             <th>Ações</th>
-            {headers.map((h, i) => (
-              <th className="px-2 py-1" key={i}>
-                <div className="flex gap-2">
-                  <span>{h.header}</span>
-                </div>
-              </th>
-            ))}
+            <THeader
+              onOrdering={update}
+              headers={headers}
+              ordering={ordering}
+            />
           </tr>
           <tr>
             <th colSpan={2}></th>
@@ -394,6 +348,26 @@ const range = (start: number, end: number) => {
   return Array.from({ length }, (_, idx) => idx + start);
 };
 
+export const sortedData = ({
+  data,
+  sorted,
+}: {
+  data: IProduct[];
+  sorted: Ordering | undefined;
+}) => {
+  const sortedData = useMemo(() => {
+    if (sorted?.order == "asc") {
+      return data.sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+    if (sorted?.order == "desc") {
+      return data.sort((a, b) => b.nome.localeCompare(a.nome));
+    }
+    return data;
+  }, [sorted]);
+
+  return sortedData;
+};
+
 export const usePagination = ({
   totalCount,
   pageSize,
@@ -467,3 +441,59 @@ export const usePagination = ({
 
   return paginationRange;
 };
+
+function THeader({
+  headers,
+  ordering,
+  onOrdering,
+}: {
+  headers: TableHeader[];
+  ordering: Ordering;
+  onOrdering(e: Ordering): void;
+}) {
+  const [current, setCurrent] = useState("");
+  return (
+    <>
+      {headers.map((h, i) => (
+        <th className="px-2 py-1" key={h.name}>
+          <div className="flex gap-2">
+            <span>{h.header}</span>
+            <button
+              onClick={() => {
+                const data = {
+                  name: h.name,
+                  order: "none",
+                  type: h.type,
+                };
+                if (current == h.name) {
+                  if (ordering.order == "none") {
+                    data.order = "desc";
+                    setCurrent(h.name);
+                    onOrdering({ ...data });
+                  } else if (ordering.order == "desc") {
+                    data.order = "asc";
+                    setCurrent(h.name);
+                    onOrdering({ ...data });
+                  } else if (ordering.order == "asc") {
+                    data.order = "none";
+                    setCurrent(h.name);
+                    onOrdering({ ...data });
+                  }
+                } else {
+                  setCurrent(h.name);
+                  data.order = "desc";
+                  onOrdering({ ...data });
+                }
+              }}
+            >
+              {current == h.name && ordering.order == "none" ? "=" : null}
+              {current == h.name && ordering.order == "desc" ? "\u2193" : null}
+              {current == h.name && ordering.order == "asc" ? "\u2191 " : null}
+              {current != h.name ? "=" : null}
+            </button>
+          </div>
+        </th>
+      ))}
+    </>
+  );
+}
