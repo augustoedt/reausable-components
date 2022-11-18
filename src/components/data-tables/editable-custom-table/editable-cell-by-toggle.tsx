@@ -40,11 +40,6 @@ export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
     setValues(item);
     setCurrentEditRow(item.codigo);
   };
-
-  // const sorting = sortedData({
-  //   data: data,
-  //   sorted: ordering,
-  // });
   const update = (e: Ordering) => {
     if (e.order == "desc") {
       const newData = [...dataset];

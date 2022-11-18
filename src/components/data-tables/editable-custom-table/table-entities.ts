@@ -17,3 +17,11 @@ export interface TableValues {
   rowData: IProduct;
   id: string | undefined;
 }
+// type Filter = {
+//   name: string;
+//   type: string;
+// }
+
+abstract class Filter {
+  
+}
