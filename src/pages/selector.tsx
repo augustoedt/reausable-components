@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Header } from "../components/headers/header.components";
-import { Selection, SelectOption } from "../components/selectors/selection";
+import Selection, { SelectOption } from "../components/selectors/selection";
 
 const options = [
   {
@@ -28,7 +27,12 @@ export default function Selectors() {
   return (
     <div>
       <Selection options={options} value={value1} onChange={setValue1} />
-      <Selection multiple options={options} value={value2} onChange={setValue2} />
+      <Selection
+        multiple
+        options={options}
+        value={value2}
+        onChange={setValue2}
+      />
     </div>
   );
 }

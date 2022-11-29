@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { IProduct } from "../../../types/data.types";
-import { Selection, SelectOption } from "../../selectors/selection";
+import Selection, { SelectOption } from "../../selectors/selection";
 import { headers, pageSizeOptions } from "./table-config";
 import { Ordering, TableHeader } from "./table-entities";
 
@@ -16,6 +16,13 @@ const initialRowData: IProduct = {
 };
 
 export function ToggleEditableCells({ dataset }: { dataset: IProduct[] }) {
+  /*
+  Variables.....
+  - dataset - static -> creates a new data variable.
+  - page - shows whats pagesize indicates
+  - pagesize - number that page shows
+  - ordering - change page order.
+  */
   const [pageSize, setPageSize] = useState<SelectOption>(pageSizeOptions[0]);
   const [data, setData] = useState(dataset);
   const p = new PaginatedData(data, Number(pageSize?.value));

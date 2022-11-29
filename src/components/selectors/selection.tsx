@@ -21,7 +21,7 @@ type SelectProps = {
   options: SelectOption[];
   hasClearOptions?: false;
 } & (SingleSelectProp | MutipleSelectProp);
-export function Selection({
+export default function Selection({
   multiple,
   value,
   onChange,
