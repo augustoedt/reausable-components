@@ -1,6 +1,6 @@
 export interface IProduct {
   nome: string;
-  quantidade?: number;
+  quantidade: number;
   codigo: string;
   marca: string;
   vendas: number;
@@ -21,9 +21,9 @@ export class Product implements IProduct {
   estoque: number;
   custo_unid: number;
 
-  constructor(p: IProduct) {
+  constructor(p: Omit<IProduct, "quantidade">) {
     this.nome = p.nome;
-    this.quantidade = p.quantidade || 0;
+    this.quantidade = 0;
     this.codigo = p.codigo;
     this.marca = p.marca;
     this.vendas = p.vendas;
@@ -35,7 +35,7 @@ export class Product implements IProduct {
   inovuaDataSource(): IProduct {
     return {
       nome: this.nome,
-      quantidade: this.quantidade || 0,
+      quantidade: this.quantidade,
       codigo: this.codigo,
       marca: this.marca,
       vendas: this.vendas,

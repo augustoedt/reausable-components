@@ -23,14 +23,13 @@ export const options: SelectOption[] = [
 export const headers: DataHeader[] = [
   {
     prop: "quantidade",
-    name: "Quantidade",
+    name: "Qtd",
     editable: true,
     type: "number",
   },
   {
     prop: "codigo",
     name: "Codigo",
-    editable: false,
     type: "string",
   },
   {

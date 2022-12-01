@@ -6,12 +6,14 @@ export function EditableRow({
   item,
   onAction,
   isSelected,
+  current,
 }: {
+  current: IProduct;
   item: IProduct;
   onAction(action: string, item: IProduct): void;
   isSelected: boolean;
 }) {
-  const [currentItem, setCurrentItem] = useState(item);
+  const [currentItem, setCurrentItem] = useState({ ...item });
 
   const handleChange = (
     value: string | number | boolean,
@@ -22,8 +24,32 @@ export function EditableRow({
     setCurrentItem({
       ...currentItem,
     });
+    const validated = verify();
+    onAction("editing", validated);
   };
 
+  function verify() {
+    let value = { ...currentItem };
+    for (let i = 0; i < headers.length; i++) {
+      if (headers[i].editable) {
+        if (headers[i].type == "number") {
+          const temp = Number((currentItem as any)[headers[i].prop]);
+          if (isNaN(temp)) {
+            value = {
+              ...value,
+              [headers[i].prop]: (item as any)[headers[i].prop] as number,
+            };
+          } else {
+            value = {
+              ...value,
+              [headers[i].prop]: Number(temp),
+            };
+          }
+        }
+      }
+    }
+    return value;
+  }
   const collums = headers.map((h, ix) => {
     if (h.editable) {
       return (
@@ -31,6 +57,7 @@ export function EditableRow({
           <input
             value={(currentItem as any)[h.prop]}
             type={h.type}
+            autoFocus
             onChange={(e) => {
               handleChange(e.currentTarget.value, h.prop, h.type);
             }}
@@ -40,9 +67,8 @@ export function EditableRow({
     }
     return <td key={`${ix}`}>{(item as any)[h.prop]}</td>;
   });
-
   return (
-    <>
+    <tr key={`${item.codigo}-editable`}>
       <td>
         <input
           checked={isSelected}
@@ -55,21 +81,22 @@ export function EditableRow({
       <td>
         <button
           onClick={() => {
-            onAction("save", currentItem);
+            const data = verify();
+            onAction("save", data);
           }}
         >
           Save
         </button>
         <button
           onClick={() => {
-            onAction("cancel", currentItem);
+            onAction("cancel", item);
           }}
         >
           Cancel
         </button>
       </td>
       {collums}
-    </>
+    </tr>
   );
 }
 
@@ -86,7 +113,11 @@ export function Row({
     return <td key={`${ix}`}>{(item as any)[h.prop]}</td>;
   });
   return (
-    <>
+    <tr
+      // onDoubleClick={(e) => {
+      //   onAction("edit", item);
+      // }}
+    >
       <td>
         <input
           checked={isSelected}
@@ -106,6 +137,11 @@ export function Row({
         </button>
       </td>
       {columns}
-    </>
+    </tr>
   );
+}
+
+
+export function HeaderRow({}:{}){
+
 }

@@ -38,12 +38,13 @@ export function DataPagination({
     return indexes;
   }, [current, pages]);
 
-  const buttons = paginationRange.map((p) => {
+  const buttons = paginationRange.map((p, id) => {
     if (p == "...") {
-      return <div>...</div>;
+      return <div key={`pag-${id}`}>...</div>;
     }
     return (
       <button
+        key={`btn-${p}`}
         className={`p-1 ${current == p ? "font-bold" : ""}`}
         onClick={() => onPageChange(p as number)}
       >

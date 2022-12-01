@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { IProduct } from "../../../types/data.types";
-import Selection, { SelectOption } from "../../selectors/selection";
+import Selection ,{ SelectOption } from "../../selectors/selection";
 import { headers, pageSizeOptions } from "./table-config";
 import { Ordering, TableHeader } from "./table-entities";
 
