@@ -6,8 +6,8 @@ export function generatePaginatination(
   dataset: IProduct[]
 ): IProduct[][] {
   const size = values.pageSize?.value as number;
-  const numPages = Math.floor(dataset.length / size) + 1;
-  console.log(`num-page: ${numPages}`);
+  const calc = Math.ceil(dataset.length / size);
+  const numPages = calc == 0 ? 1 : calc;
   const allPages: IProduct[][] = [];
   for (let i = 0; i < numPages; i++) {
     if (i == numPages - 1) {

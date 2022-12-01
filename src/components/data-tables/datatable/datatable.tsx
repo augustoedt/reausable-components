@@ -38,8 +38,8 @@ export default function DataTable<T>({
   const [virtualData, setVirtualData] = useState([...data]);
   const [columnFilter, setColumnFilter] = useState<Filter[]>([]);
   const filteredData = useMemo(() => {
-    return filterComputation(data, columnFilter);
-  }, [columnFilter, data]);
+    return filterComputation(virtualData, columnFilter);
+  }, [columnFilter, virtualData]);
   const [editableData, setEditableData] = useState({ ...emptyRow });
   const [editable, setEditable] = useState<string>("");
   const [pagination, setPaginaton] = useState<Pagination>({
@@ -81,7 +81,7 @@ export default function DataTable<T>({
     if (action == "save") {
       setEditableData({ ...item });
       setEditable("");
-      updateList(virtualData, item, "codigo");
+      setVirtualData([...updateList(virtualData, item, "codigo")]);
     }
     if (action == "check") {
       if (checked.includes(item.codigo)) {
@@ -140,7 +140,7 @@ export default function DataTable<T>({
       />
     );
   }, [pages, pagination.page]);
-
+  console.log(editableData);
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -152,14 +152,16 @@ export default function DataTable<T>({
           CASE EDITABLE ROW IS LAST ROW CHANGE TO FIRST ROW
           */
           if (index == pages[pagination.page].length - 1) {
-            updateList(data, editableData, "codigo");
+            setVirtualData([
+              ...updateList(virtualData, editableData, "codigo"),
+            ]);
             setEditableData(pages[pagination.page][0]);
             setEditable(pages[pagination.page][0].codigo);
           }
           /*
           CHANGE EDITABLE ROW TO NEXT ROW BELOW
           */
-          updateList(virtualData, editableData, "codigo");
+          setVirtualData([...updateList(virtualData, editableData, "codigo")]);
           setEditableData(pages[pagination.page][index + 1]);
           setEditable(pages[pagination.page][index + 1].codigo);
         }
@@ -213,6 +215,10 @@ export default function DataTable<T>({
                       const index = columnFilter.findIndex(
                         (f) => f.prop == e.prop
                       );
+                      setPaginaton({
+                        ...pagination,
+                        page: 0,
+                      });
                       if (e.value == "") {
                         setColumnFilter(
                           columnFilter.filter((f) => f.prop !== e.prop)
@@ -238,6 +244,10 @@ export default function DataTable<T>({
                       const index = columnFilter.findIndex(
                         (f) => f.prop == e.prop
                       );
+                      setPaginaton({
+                        ...pagination,
+                        page: 0,
+                      });
                       if (value.max == "" && value.min == "") {
                         setColumnFilter([
                           ...columnFilter.filter((f) => f.prop !== e.prop),

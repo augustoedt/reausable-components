@@ -1,5 +1,10 @@
 import { useRef } from "react";
+import tw from "twin.macro";
 import { Filter } from "./datatable.types";
+
+const NumberInput = tw.input`px-1 text-sm border bg-gray-100 border-gray-300 rounded w-16`;
+const StringInput = tw.input`px-1 text-sm border bg-gray-100 border-gray-300 rounded w-36`;
+
 export function TextFilter({
   onChange,
   prop,
@@ -10,8 +15,8 @@ export function TextFilter({
   const input = useRef<HTMLInputElement>(null);
   return (
     <th className="">
-      <input
-        className="px-1 text-sm border bg-gray-100 border-gray-300 rounded w-36"
+      <StringInput
+        className=""
         type="text"
         ref={input}
         onChange={(e) => {
@@ -39,8 +44,8 @@ export function NumberFilter({
   return (
     <th className="self-center">
       <div className="flex gap-2">
-        <input
-          className="px-1 text-sm border bg-gray-100 border-gray-300 rounded w-16"
+        <NumberInput
+          className=""
           type="number"
           ref={inputMin}
           placeholder="min"
@@ -55,8 +60,7 @@ export function NumberFilter({
             });
           }}
         />
-        <input
-          className="px-1 text-sm border bg-gray-100 border-gray-300 rounded w-16"
+        <NumberInput
           type="number"
           placeholder="max"
           ref={inputMax}
