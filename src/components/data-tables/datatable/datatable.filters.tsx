@@ -2,15 +2,15 @@ import { useRef } from "react";
 import tw from "twin.macro";
 import { Filter } from "./datatable.types";
 
-const NumberInput = tw.input`px-1 text-sm border bg-gray-100 border-gray-300 rounded w-16`;
-const StringInput = tw.input`px-1 text-sm border bg-gray-100 border-gray-300 rounded w-36`;
+const StringInput = tw.input`p-1 text-sm border bg-gray-100 border-gray-300 rounded w-28`;
+const NumberInput = tw(StringInput)`w-16 text-center`;
 
-export function TextFilter({
+export function TextFilter<T>({
   onChange,
   prop,
 }: {
-  prop: string;
-  onChange(e: Filter): void;
+  prop: keyof T;
+  onChange(e: Filter<T>): void;
 }) {
   const input = useRef<HTMLInputElement>(null);
   return (
@@ -31,12 +31,12 @@ export function TextFilter({
   );
 }
 
-export function NumberFilter({
+export function NumberFilter<T>({
   prop,
   onChange,
 }: {
-  prop: string;
-  onChange(e: Filter): void;
+  prop: keyof T;
+  onChange(e: Filter<T>): void;
 }) {
   const inputMin = useRef<HTMLInputElement>(null);
   const inputMax = useRef<HTMLInputElement>(null);

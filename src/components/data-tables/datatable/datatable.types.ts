@@ -1,11 +1,12 @@
 import { SelectOption } from "../../selectors/selection";
 
-export type DataHeader = {
-  prop: string;
+export type DataHeader<T> = {
+  prop: keyof T;
   name: string;
   type: string;
   editable?: boolean;
   hasFilter?: boolean;
+  render?: (record: T) => string | number;
 };
 
 export type Pagination = {
@@ -16,8 +17,29 @@ export type Pagination = {
 export type FilterType = "contains" | "range" | "selection";
 export type RangeFilterType = { min?: number | string; max?: number | string };
 
-export type Filter = {
+export type Filter<T> = {
   type: FilterType;
   value?: RangeFilterType | string | string[];
-  prop: string;
+  prop: keyof T;
+};
+
+export enum Order {
+  asc,
+  desc,
+  none,
+}
+
+export type OrderFilter<T> = {
+  prop: keyof T | null;
+  order: Order;
+};
+
+export type SelectionGroup<T> = {
+  id: string;
+  name: string;
+  items: SelectionItem<T>[]
+};
+export type SelectionItem<T> = {
+  key: keyof T;
+  value: T[keyof T];
 };

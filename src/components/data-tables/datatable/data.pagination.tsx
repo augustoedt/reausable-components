@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { IProduct } from "../../../types/data.types";
+import { paginationStyle } from "./datatables.styled.components";
 
 export function DataPagination({
   current,
@@ -39,18 +40,26 @@ export function DataPagination({
   }, [current, pages]);
 
   const buttons = paginationRange.map((p, id) => {
+    const dotsKey = `pag-${id}`;
+    const buttonKey = `btn-${p}`;
+    const isCurrent = current == p;
+    const page = p as number;
     if (p == "...") {
-      return <div key={`pag-${id}`}>...</div>;
+      return (
+        <div css={paginationStyle.dotButton} key={dotsKey}>
+          ...
+        </div>
+      );
     }
     return (
       <button
-        key={`btn-${p}`}
-        className={`p-1 ${current == p ? "font-bold" : ""}`}
-        onClick={() => onPageChange(p as number)}
+        css={paginationStyle.pageButton({ isCurrent })}
+        key={buttonKey}
+        onClick={() => onPageChange(page)}
       >
-        {(p as number) + 1}
+        {page + 1}
       </button>
     );
   });
-  return <div className="flex">{buttons}</div>;
+  return <div css={paginationStyle.container}>{buttons}</div>;
 }

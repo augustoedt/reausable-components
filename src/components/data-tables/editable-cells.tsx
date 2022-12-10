@@ -194,7 +194,7 @@ export const EditableCell = <T extends unknown>({
                     !values.checkList[i]
                       ? "border-gray-200 text-gray-300"
                       : values.items[i].quantity > 0 &&
-                        values.items[i].quantity != NaN
+                        !Number.isNaN(values.items[i].quantity)
                       ? "border-black"
                       : "border-red-400"
                   } border-2 max-w-[50px] text-center rounded-sm`}

@@ -1,75 +1,65 @@
 import { useState } from "react";
 import { IProduct } from "../../../types/data.types";
 import { headers } from "./datatable.config";
+import { verifyData } from "./datatable.functions";
+import { CancelIcon, EditIcon, SaveIcon } from "./datatable.icons";
+import {
+  ColumnContainer,
+  EditorInput,
+  ToolButton,
+  ToolsContainer
+} from "./datatables.styled.components";
 
-export function EditableRow({
-  item,
-  onAction,
-  isSelected,
-  current,
-}: {
+type EditableRowProps = {
   current: IProduct;
   item: IProduct;
   onAction(action: string, item: IProduct): void;
   isSelected: boolean;
-}) {
-  const [currentItem, setCurrentItem] = useState({ ...item });
+};
 
+type RowProps = {
+  item: IProduct;
+  onAction(action: string, item: IProduct): void;
+  isSelected: boolean;
+};
+
+export function EditableRow({ item, onAction, isSelected }: EditableRowProps) {
+  const [currentItem, setCurrentItem] = useState({ ...item });
+  const rowKey = `${item.codigo}-editable`;
   const handleChange = (
-    value: string | number | boolean,
-    prop: string,
-    type: string
+    value: typeof item[keyof typeof item],
+    prop: keyof typeof item
   ) => {
     (currentItem as any)[prop] = value;
     setCurrentItem({
       ...currentItem,
     });
-    const validated = verify();
+    const validated = verifyData(currentItem, item);
     onAction("editing", validated);
   };
 
-  function verify() {
-    let value = { ...currentItem };
-    for (let i = 0; i < headers.length; i++) {
-      if (headers[i].editable) {
-        if (headers[i].type == "number") {
-          const temp = Number((currentItem as any)[headers[i].prop]);
-          if (isNaN(temp)) {
-            value = {
-              ...value,
-              [headers[i].prop]: (item as any)[headers[i].prop] as number,
-            };
-          } else {
-            value = {
-              ...value,
-              [headers[i].prop]: Number(temp),
-            };
-          }
-        }
-      }
-    }
-    return value;
-  }
-  const collums = headers.map((h, ix) => {
+  const columns = headers.map((h, ix) => {
+    const columnKey = `${ix}-${item[h.prop]}`;
+    const dataValue = item[h.prop];
     if (h.editable) {
       return (
-        <td key={`${ix}-${(item as any)[h.prop]}`}>
-          <input
+        <ColumnContainer key={columnKey}>
+          <EditorInput
             value={(currentItem as any)[h.prop]}
             type={h.type}
             autoFocus
             onChange={(e) => {
-              handleChange(e.currentTarget.value, h.prop, h.type);
+              handleChange(e.currentTarget.value, h.prop);
             }}
           />
-        </td>
+        </ColumnContainer>
       );
     }
-    return <td key={`${ix}`}>{(item as any)[h.prop]}</td>;
+    return <td key={columnKey}>{dataValue}</td>;
   });
   return (
-    <tr key={`${item.codigo}-editable`}>
-      <td>
+    <tr key={rowKey}>
+      <ColumnContainer>
         <input
           checked={isSelected}
           type="checkbox"
@@ -77,71 +67,61 @@ export function EditableRow({
             onAction("check", item);
           }}
         />
-      </td>
-      <td>
-        <button
-          onClick={() => {
-            const data = verify();
-            onAction("save", data);
-          }}
-        >
-          Save
-        </button>
-        <button
-          onClick={() => {
-            onAction("cancel", item);
-          }}
-        >
-          Cancel
-        </button>
-      </td>
-      {collums}
-    </tr>
-  );
-}
-
-export function Row({
-  item,
-  onAction,
-  isSelected,
-}: {
-  item: IProduct;
-  onAction(action: string, item: IProduct): void;
-  isSelected: boolean;
-}) {
-  const columns = headers.map((h, ix) => {
-    return <td key={`${ix}`}>{(item as any)[h.prop]}</td>;
-  });
-  return (
-    <tr
-      // onDoubleClick={(e) => {
-      //   onAction("edit", item);
-      // }}
-    >
-      <td>
-        <input
-          checked={isSelected}
-          type="checkbox"
-          onChange={(e) => {
-            onAction("check", item);
-          }}
-        />
-      </td>
-      <td>
-        <button
-          onClick={() => {
-            onAction("edit", item);
-          }}
-        >
-          Edit
-        </button>
-      </td>
+      </ColumnContainer>
+      <ColumnContainer>
+        <ToolsContainer>
+          <ToolButton
+            onClick={() => {
+              const data = verifyData(currentItem, item);
+              onAction("save", data);
+            }}
+          >
+            <SaveIcon />
+          </ToolButton>
+          <ToolButton
+            onClick={() => {
+              onAction("cancel", item);
+            }}
+          >
+            <CancelIcon />
+          </ToolButton>
+        </ToolsContainer>
+      </ColumnContainer>
       {columns}
     </tr>
   );
 }
 
-
-export function HeaderRow({}:{}){
-
+export function Row({ item, onAction, isSelected }: RowProps) {
+  const columns = headers.map((h, ix) => {
+    const columnKey = `${ix}`;
+    const value = item[h.prop];
+    return (
+      <ColumnContainer key={columnKey}>
+        <span>{value}</span>
+      </ColumnContainer>
+    );
+  });
+  return (
+    <tr>
+      <ColumnContainer>
+        <input
+          checked={isSelected}
+          type="checkbox"
+          onChange={(e) => {onAction("check", item);}}
+        />
+      </ColumnContainer>
+      <ColumnContainer>
+        <ToolsContainer>
+          <ToolButton
+            onClick={() => {onAction("edit", item);}}>
+            <EditIcon />
+          </ToolButton>
+        </ToolsContainer>
+      </ColumnContainer>
+      {columns}
+    </tr>
+  );
 }
+
+export function HeaderRow({}: {}) {}

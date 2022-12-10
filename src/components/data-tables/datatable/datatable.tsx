@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IProduct } from "../../../types/data.types";
 import Selection, { SelectOption } from "../../selectors/selection";
 import { DataPagination } from "./data.pagination";
@@ -7,14 +7,20 @@ import { NumberFilter, TextFilter } from "./datatable.filters";
 import {
   filterComputation,
   generatePaginatination,
+  getNextFilter,
+  orderData,
   updateList
 } from "./datatable.functions";
+import { OrderComponent } from "./datatable.icons";
 import { EditableRow, Row } from "./datatable.row";
 import {
   DataHeader,
   Filter,
+  Order,
+  OrderFilter,
   Pagination,
-  RangeFilterType
+  RangeFilterType,
+  SelectionGroup
 } from "./datatable.types";
 
 const emptyRow: IProduct = {
@@ -29,14 +35,22 @@ const emptyRow: IProduct = {
 };
 
 export default function DataTable<T>({
+  key,
   headers,
   data,
+  selectionGroup,
 }: {
-  headers: DataHeader[];
+  key: keyof IProduct
+  headers: DataHeader<IProduct>[];
   data: IProduct[];
+  selectionGroup: SelectionGroup<IProduct>;
 }) {
+  const [ordering, setOrdering] = useState<OrderFilter<IProduct>>({
+    prop: null,
+    order: Order.none,
+  });
   const [virtualData, setVirtualData] = useState([...data]);
-  const [columnFilter, setColumnFilter] = useState<Filter[]>([]);
+  const [columnFilter, setColumnFilter] = useState<Filter<IProduct>[]>([]);
   const filteredData = useMemo(() => {
     return filterComputation(virtualData, columnFilter);
   }, [columnFilter, virtualData]);
@@ -50,40 +64,51 @@ export default function DataTable<T>({
     () => generatePaginatination(pagination, filteredData),
     [pagination.pageSize, filteredData]
   );
-
   const [checked, setChecked] = useState<string[]>([]);
+
+  const mainSelect = useRef<HTMLInputElement>(null);
+
+  useMemo(() => {
+    if (checked.length != filteredData.length) {
+      if (mainSelect.current) {
+        mainSelect.current.checked = false;
+        mainSelect.current.indeterminate = true;
+      }
+    }
+  }, [checked.length]);
 
   const handleAction = (
     action: string,
-    item: IProduct,
-    header?: DataHeader
+    item?: IProduct,
+    prop?: keyof IProduct
   ) => {
-    if (action == "orderBy" && header != undefined) {
-      header.prop;
+    if (action == "orderBy" && prop != undefined) {
+      const newOrderingFilter = getNextFilter(prop, ordering);
+      setOrdering(newOrderingFilter);
+      if (newOrderingFilter.order == Order.none) {
+        setVirtualData([...data]);
+      } else {
+        const newVirtualData = orderData(newOrderingFilter, [...virtualData]);
+        setVirtualData([...newVirtualData]);
+      }
     }
-
-    if (action == "filter") {
-    }
-
-    if (action == "edit") {
+    if (item && action == "edit") {
       setEditableData({ ...item });
       setEditable(item.codigo);
     }
-
-    if (action == "editing") {
+    if (item && action == "editing") {
       setEditableData({ ...item });
     }
-
-    if (action == "cancel") {
+    if (item && action == "cancel") {
       setEditableData({ ...item });
       setEditable("");
     }
-    if (action == "save") {
+    if (item && action == "save") {
       setEditableData({ ...item });
       setEditable("");
       setVirtualData([...updateList(virtualData, item, "codigo")]);
     }
-    if (action == "check") {
+    if (item && action == "check") {
       if (checked.includes(item.codigo)) {
         setChecked(checked.filter((f) => f != item.codigo));
       } else {
@@ -140,7 +165,6 @@ export default function DataTable<T>({
       />
     );
   }, [pages, pagination.page]);
-  console.log(editableData);
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -195,11 +219,38 @@ export default function DataTable<T>({
         <thead>
           <tr>
             <th>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                ref={mainSelect}
+                onClick={(e) => {
+                  const indeterminated = mainSelect.current?.indeterminate;
+                  const isChecked = mainSelect.current?.checked;
+                  console.log(indeterminated, isChecked);
+                  if (indeterminated) {
+                    mainSelect.current.checked = true;
+                    setChecked([...filteredData.map((f) => f.codigo)]);
+                  } else if (isChecked) {
+                    console.log("isChecked");
+                    mainSelect.current.checked = false;
+                    setChecked([]);
+                  }
+                }}
+              />
             </th>
             <th>Ações</th>
             {headers.map((h, i) => {
-              return <th key={`${i}-header-${h.prop}`}>{h.name}</th>;
+              return (
+                <th key={`${i}-header-${h.prop}`}>
+                  <div className="flex items-center gap-2 justify-center">
+                    {h.name}
+                    <OrderComponent
+                      onAction={handleAction}
+                      prop={h.prop}
+                      filter={ordering}
+                    />
+                  </div>
+                </th>
+              );
             })}
           </tr>
           <tr>

@@ -1,3 +1,4 @@
+import { IProduct } from "../../../types/data.types";
 import { SelectOption } from "../../selectors/selection";
 import { DataHeader } from "./datatable.types";
 
@@ -20,7 +21,7 @@ export const options: SelectOption[] = [
   },
 ];
 
-export const headers: DataHeader[] = [
+export const headers: DataHeader<IProduct>[] = [
   {
     prop: "quantidade",
     name: "Qtd",
