@@ -37,9 +37,10 @@ export type OrderFilter<T> = {
 export type SelectionGroup<T> = {
   id: string;
   name: string;
-  items: SelectionItem<T>[]
+  show: boolean;
+  key: keyof T;
+  itens: SelectionItem<T>[]
 };
 export type SelectionItem<T> = {
-  key: keyof T;
   value: T[keyof T];
 };

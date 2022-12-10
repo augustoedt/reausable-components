@@ -1,4 +1,5 @@
 import { useState } from "react";
+import tw from "twin.macro";
 import { IProduct } from "../../../types/data.types";
 import { headers } from "./datatable.config";
 import { verifyData } from "./datatable.functions";
@@ -15,15 +16,22 @@ type EditableRowProps = {
   item: IProduct;
   onAction(action: string, item: IProduct): void;
   isSelected: boolean;
+  isInSelectionGroup: boolean;
 };
 
 type RowProps = {
   item: IProduct;
   onAction(action: string, item: IProduct): void;
   isSelected: boolean;
+  isInSelectionGroup: boolean;
 };
 
-export function EditableRow({ item, onAction, isSelected }: EditableRowProps) {
+export function EditableRow({
+  item,
+  onAction,
+  isSelected,
+  isInSelectionGroup,
+}: EditableRowProps) {
   const [currentItem, setCurrentItem] = useState({ ...item });
   const rowKey = `${item.codigo}-editable`;
   const handleChange = (
@@ -58,7 +66,7 @@ export function EditableRow({ item, onAction, isSelected }: EditableRowProps) {
     return <td key={columnKey}>{dataValue}</td>;
   });
   return (
-    <tr key={rowKey}>
+    <tr css={colorRow(isInSelectionGroup)} key={rowKey}>
       <ColumnContainer>
         <input
           checked={isSelected}
@@ -92,7 +100,12 @@ export function EditableRow({ item, onAction, isSelected }: EditableRowProps) {
   );
 }
 
-export function Row({ item, onAction, isSelected }: RowProps) {
+export function Row({
+  item,
+  onAction,
+  isSelected,
+  isInSelectionGroup,
+}: RowProps) {
   const columns = headers.map((h, ix) => {
     const columnKey = `${ix}`;
     const value = item[h.prop];
@@ -103,18 +116,23 @@ export function Row({ item, onAction, isSelected }: RowProps) {
     );
   });
   return (
-    <tr>
+    <tr css={colorRow(isInSelectionGroup)}>
       <ColumnContainer>
         <input
           checked={isSelected}
           type="checkbox"
-          onChange={(e) => {onAction("check", item);}}
+          onChange={(e) => {
+            onAction("check", item);
+          }}
         />
       </ColumnContainer>
       <ColumnContainer>
         <ToolsContainer>
           <ToolButton
-            onClick={() => {onAction("edit", item);}}>
+            onClick={() => {
+              onAction("edit", item);
+            }}
+          >
             <EditIcon />
           </ToolButton>
         </ToolsContainer>
@@ -124,4 +142,7 @@ export function Row({ item, onAction, isSelected }: RowProps) {
   );
 }
 
-export function HeaderRow({}: {}) {}
+const colorRow = (selection: boolean) => {
+  if (selection) return tw`bg-amber-100`;
+  return tw``;
+};

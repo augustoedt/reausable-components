@@ -5,7 +5,8 @@ import {
   Order,
   OrderFilter,
   Pagination,
-  RangeFilterType
+  RangeFilterType,
+  SelectionGroup
 } from "./datatable.types";
 
 export function verifyData(currentItem: IProduct, item: IProduct) {
@@ -161,4 +162,17 @@ export function orderData<T>(filter: OrderFilter<T>, data: T[]) {
   }
 
   return data;
+}
+
+export function verifySelectionGroup<T>(
+  item: T,
+  selections: SelectionGroup<T>[]
+) {
+  const shownSelections = selections.filter((f) => f.show);
+
+  return shownSelections
+    .map((s) => {
+      return s.itens.map((i) => i.value).includes(item[s.key]);
+    })
+    .includes(true);
 }

@@ -9,7 +9,8 @@ import {
   generatePaginatination,
   getNextFilter,
   orderData,
-  updateList
+  updateList,
+  verifySelectionGroup
 } from "./datatable.functions";
 import { OrderComponent } from "./datatable.icons";
 import { EditableRow, Row } from "./datatable.row";
@@ -40,10 +41,10 @@ export default function DataTable<T>({
   data,
   selectionGroup,
 }: {
-  key: keyof IProduct
+  key: keyof IProduct;
   headers: DataHeader<IProduct>[];
   data: IProduct[];
-  selectionGroup: SelectionGroup<IProduct>;
+  selectionGroup: SelectionGroup<IProduct>[];
 }) {
   const [ordering, setOrdering] = useState<OrderFilter<IProduct>>({
     prop: null,
@@ -134,9 +135,11 @@ export default function DataTable<T>({
 
   const columns = pages[pagination.page].map((d, i) => {
     const isChecked = checked.includes(d.codigo);
+    const isInSelectionGroup = verifySelectionGroup(d, selectionGroup);
     if (d.codigo == editable) {
       return (
         <EditableRow
+          isInSelectionGroup={isInSelectionGroup}
           key={d.codigo}
           current={editableData}
           isSelected={isChecked}
@@ -147,6 +150,7 @@ export default function DataTable<T>({
     }
     return (
       <Row
+        isInSelectionGroup={isInSelectionGroup}
         key={d.codigo}
         isSelected={isChecked}
         item={d}

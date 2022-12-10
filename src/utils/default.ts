@@ -1,3 +1,6 @@
+import { SelectionGroup } from "../components/data-tables/datatable/datatable.types";
+import { IProduct } from "../types/data.types";
+
 const headers = [
   {
     title: "Home",
@@ -13818,6 +13821,79 @@ const data = [
     saida: 1,
     estoque: 0,
     custo_unid: 98,
+  },
+];
+
+export const selectionGroup: SelectionGroup<IProduct>[] = [
+  {
+    id: "a",
+    name: "Mock Lista",
+    show: true,
+    key: "codigo",
+    itens: [
+      {
+        value: "51857970",
+      },
+      {
+        value: "100185259",
+      },
+      {
+        value: "RCC20Y1795",
+      },
+      {
+        value: "96709321XT",
+      },
+      {
+        value: "98243373XT",
+      },
+      {
+        value: "100244868",
+      },
+      {
+        value: "100208837",
+      },
+      {
+        value: "100179596",
+      },
+      {
+        value: "51829564",
+      },
+    ],
+  },
+  {
+    id: "b",
+    name: "Mock Lista",
+    show: true,
+    key: "codigo",
+    itens: [
+      {
+        value: "100213339",
+      },
+      {
+        value: "7568442",
+      },
+      {
+        value: "51834859",
+      },
+      {
+        value: "735381068",
+      },
+      {
+        value: "HP400",
+      },
+      {
+        value: "14329201",
+      },
+      {
+        value: "46820740",
+      },
+      {
+        value: "1323Y2",
+      },
+      {
+        value: "1336220080",
+      },
+    ],
   },
 ];
 
