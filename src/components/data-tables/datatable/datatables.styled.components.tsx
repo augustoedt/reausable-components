@@ -8,7 +8,7 @@ type ColProps = {
 
 export const ToolButton = tw.button`shadow self-center`;
 export const ToolsContainer = tw.div`flex gap-2 place-content-center`;
-export const EditorInput = tw.input`p-1 text-sm border bg-gray-100 border-gray-300 rounded w-28`;
+export const EditorInput = tw.input`p-1 text-sm border bg-gray-100 border-gray-300 rounded-md w-28`;
 export const alignStyle = {
   center: tw`text-center`,
   left: tw`text-left`,

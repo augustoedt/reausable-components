@@ -1,8 +1,8 @@
 import { useState } from "react";
-import DataTable from "../components/data-tables/datatable/datatable";
-import { headers } from "../components/data-tables/datatable/datatable.config";
+import Datatable2 from "../components/data-tables/datatable.v2/datatable.v2";
+import { QuotationResult } from "../components/data-tables/datatable.v2/datatable.v2.types";
 import { Product } from "../types/data.types";
-import { data, selectionGroup } from "../utils/default";
+import { data, report, selectionGroup } from "../utils/default";
 
 export default function Tables() {
   const [tableData, setTableData] = useState(
@@ -13,14 +13,28 @@ export default function Tables() {
 
   const [selections, setSelection] = useState(selectionGroup);
 
+  const quotationReport: QuotationResult = report;
+
+  const initialResult = {};
+
+  const [aprovalResult, setAprovalResult] = useState({ ...initialResult });
+
+  function handleUpdateResult(item: any) {
+    setAprovalResult(item);
+  }
+
   return (
     <>
-      <DataTable
+      <Datatable2
+        report={quotationReport}
+        onUpdateResult={handleUpdateResult}
+      />
+      {/* <DataTable
         headers={headers}
         data={tableData}
         key={"codigo"}
         selectionGroup={selections}
-      />
+      /> */}
       {/* <ToggleEditableCells dataset={tableData} /> */}
       {/* <DataGridInovua dataset={tableData} /> */}
       {/* <EditableSortedCells data={data} /> */}

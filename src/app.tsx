@@ -39,7 +39,7 @@ export default function App() {
   return (
     <>
       <Header.Simple />
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </>
   );
 }
