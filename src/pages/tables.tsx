@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Datatable2 from "../components/data-tables/datatable.v2/datatable.v2";
-import { QuotationResult } from "../components/data-tables/datatable.v2/datatable.v2.types";
-import { Product } from "../types/data.types";
+import { getWinnerUsers } from "../components/data-tables/datatable.v2/datatable.v2.functions";
+import {
+  QuotationResult,
+  Winner
+} from "../components/data-tables/datatable.v2/datatable.v2.types";
+import { CreatedDemandItem, CreateDemand, Product } from "../types/data.types";
 import { data, report, selectionGroup } from "../utils/default";
 
 export default function Tables() {
@@ -15,17 +19,43 @@ export default function Tables() {
 
   const quotationReport: QuotationResult = report;
 
-  const initialResult = {};
+  const winners: Winner[] = useMemo(() => {
+    return getWinnerUsers(report);
+  }, [report.id]);
+
+  const initialResult: CreateDemand = {
+    quotation_id: quotationReport.id,
+    user_id: "admin",
+    name: quotationReport.name,
+    avaliable_for: quotationReport.proposals.map((p) => p.userId),
+    itens: winners.map((w, i) => {
+      return {
+        user_id: "",
+        email: "",
+        codigo: w.codigo,
+        description: quotationReport.items[i].nome,
+        quantity: 0,
+        price: 0,
+      };
+    }),
+  };
 
   const [aprovalResult, setAprovalResult] = useState({ ...initialResult });
 
-  function handleUpdateResult(item: any) {
-    setAprovalResult(item);
+  function handleUpdateResult(item: CreatedDemandItem, index: number) {
+    const itens = [...aprovalResult.itens];
+    itens[index] = item;
+    setAprovalResult({
+      ...aprovalResult,
+      itens,
+    });
+    console.log(console.log(aprovalResult.itens[index]));
   }
 
   return (
     <>
       <Datatable2
+        winners={winners}
         report={quotationReport}
         onUpdateResult={handleUpdateResult}
       />

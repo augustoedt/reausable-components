@@ -1,18 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import tw from "twin.macro";
-import { getWinnerUsers } from "./datatable.v2.functions";
+import { CreatedDemandItem } from "../../../types/data.types";
 import { ProposalRItem, QuotationResult, Winner } from "./datatable.v2.types";
 
 export default function Datatable2({
   report,
   onUpdateResult,
+  winners,
 }: {
   report: QuotationResult;
-  onUpdateResult(item: any): void;
+  onUpdateResult(item: CreatedDemandItem, index: number): void;
+  winners: Winner[];
 }) {
-  const winners: Winner[] = useMemo(() => {
-    return getWinnerUsers(report);
-  }, [report.id]);
   const [hiddenUsers, setHiddenUsers] = useState<string[]>([]);
   const users = report.proposals.map((p) => {
     return {
@@ -21,21 +20,18 @@ export default function Datatable2({
     };
   });
 
-  const handleHide = (id: string) => {
-    if (hiddenUsers.includes(id)) {
-      setHiddenUsers([...hiddenUsers.filter((h) => h != id)]);
-      console.log(hiddenUsers)
-    } else {
-      hiddenUsers.push(id);
-      setHiddenUsers([...hiddenUsers]);
+  function handleSelection(index: number, isSelected: boolean){
+    const item : CreatedDemandItem = {
+      user_id: item[]
     }
-  };
+  }
+
   return (
     <>
       <select
         value={hiddenUsers}
         multiple={true}
-        onChange={(e) =>console.log(e.currentTarget.value)}
+        onChange={(e) => console.log(e.currentTarget.value)}
       >
         {users.map((u, i) => (
           <option key={u.id} value={u.id}>
@@ -71,7 +67,6 @@ export default function Datatable2({
             <HColumn>Qtd</HColumn>
             <HColumn>Ult. compra</HColumn>
             <HColumn>M. valor</HColumn>
-
             {report.proposals.map((p, i) => {
               return (
                 <UserHeader key={i} hide={hiddenUsers.includes(p.userId)} />
@@ -87,22 +82,29 @@ export default function Datatable2({
                   selected={winners[i]}
                   users={users}
                   index={i}
-                  onSelection={(e) => {
-                    console.log(e);
-                  }}
+                  onSelection={handleSelection}
                 />
                 <WinnerColumns
                   winner={winners[i]}
                   lastPrice={report.items[i].ultimoPreco}
                 />
                 {report.proposals.map((p, ir) => {
-                  return (
-                    <UserColumn
-                      key={ir}
-                      item={p.items[i]}
-                      isWinner={p.id == winners[i].userId}
-                    />
-                  );
+                  if (hiddenUsers.includes(p.userId)) {
+                    return (
+                      <>
+                        <td></td>
+                        <td></td>
+                      </>
+                    );
+                  } else {
+                    return (
+                      <UserColumn
+                        key={ir}
+                        item={p.items[i]}
+                        isWinner={p.id == winners[i].userId}
+                      />
+                    );
+                  }
                 })}
               </Row>
             );
@@ -166,20 +168,26 @@ function SelectionColumns({
   selected,
   users,
   onSelection,
+  index
 }: {
   selected: Winner;
   users: WinnerUser[];
   index: number;
-  onSelection(index: number): void;
+  onSelection(index: number, selected: boolean): void;
 }) {
   const [current, setCurrent] = useState<boolean>(false);
   const currentStyle = current
     ? ButtonStyle.optionYes
     : ButtonStyle.noSelection;
+
+  function handleClick(){
+    setCurrent(!current);
+    onSelection(index, current)
+  }
   return (
     <>
       <WColumn>
-        <button css={currentStyle} onClick={() => setCurrent(!current)}>
+        <button css={currentStyle} onClick={handleClick}>
           Sim
         </button>
       </WColumn>
@@ -196,7 +204,7 @@ function SelectionColumns({
   );
 }
 
-const SelectorStyle = tw`bg-gray-50 border border-gray-300 text-sm rounded-md py-2 w-28`;
+const SelectorStyle = tw`bg-gray-50 border border-gray-300 text-sm rounded-md py-1 w-28`;
 
 const ButtonStyle = {
   noSelection: tw`px-4 py-1 my-1 text-sm font-semibold uppercase bg-gray-200 shadow-sm hover:shadow-xl hover:bg-gray-300 rounded-md`,
@@ -204,10 +212,11 @@ const ButtonStyle = {
 };
 
 const ColumnStyle = {
-  yellow: tw`py-2 px-6 text-center bg-yellow-200`,
-  green: tw`py-2 px-6 text-center bg-green-200`,
-  winner: tw`py-2 px-6 text-center bg-slate-300`,
-  none: tw`py-2 px-6 text-center`,
+  yellow: tw`py-1 px-6 text-center bg-yellow-200`,
+  green: tw`py-1 px-6 text-center bg-green-200`,
+  winner: tw`py-1 px-6 text-center bg-slate-300`,
+  none: tw`py-1 px-6 text-center`,
+  hidden: tw`hidden`,
 };
 
 const Tables = tw.table`rounded-t-lg overflow-clip`;
@@ -215,8 +224,8 @@ const THead = tw.thead`border-b border-black bg-slate-200 uppercase text-sm `;
 const TBody = tw.tbody`border border-gray-200`;
 const Row = tw.tr`hover:bg-gray-100 border-b-2 border-gray-200 text-sm font-semibold bg-gray-50`;
 const HRow = tw.tr``;
-const HColumn = tw.th`px-4 py-2`;
-const HColumnStyle1 = tw`px-4 py-2 overflow-clip text-ellipsis`;
+const HColumn = tw.th`px-4 py-1`;
+const HColumnStyle1 = tw`px-4 py-1 overflow-clip text-ellipsis`;
 const HColumnStyle2 = { "max-width": "12em" };
 const HColumnColorStyle = {
   red: tw`bg-red-400`,

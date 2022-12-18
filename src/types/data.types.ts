@@ -45,3 +45,37 @@ export class Product implements IProduct {
     };
   }
 }
+
+export type CreatedDemandItem = {
+  user_id: string;
+  email: string;
+  codigo: string;
+  description: string;
+  quantity: number;
+  price: number;
+};
+
+export type CreateDemand = {
+  quotation_id: string;
+  user_id: string;
+  name: string;
+  avaliable_for: string[];
+  itens: CreatedDemandItem[];
+};
+
+export type UpdateDemand = {
+  quotation_id?: string | undefined;
+  name?: string | undefined;
+  avaliable_for?: string[] | undefined;
+  itens?:
+    | {
+        user_id: string;
+        email: string;
+        codigo: string;
+        description: string;
+        quantity: number;
+        price: number;
+      }[]
+    | undefined;
+  id: string;
+};
