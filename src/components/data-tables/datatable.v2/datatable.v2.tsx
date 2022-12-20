@@ -1,7 +1,12 @@
 import { useState } from "react";
 import tw from "twin.macro";
 import { CreatedDemandItem } from "../../../types/data.types";
-import { ProposalRItem, QuotationResult, Winner } from "./datatable.v2.types";
+import {
+  ProposalRItem,
+  QuotationResult,
+  QuotationRItems,
+  Winner
+} from "./datatable.v2.types";
 
 export default function Datatable2({
   report,
@@ -13,6 +18,7 @@ export default function Datatable2({
   winners: Winner[];
 }) {
   const [hiddenUsers, setHiddenUsers] = useState<string[]>([]);
+
   const users = report.proposals.map((p) => {
     return {
       id: p.id,
@@ -20,25 +26,29 @@ export default function Datatable2({
     };
   });
 
-  function handleSelection(index: number, isSelected: boolean){
-    const item : CreatedDemandItem = {
-      user_id: item[]
-    }
+  function handleSelection(
+    index: number,
+    isSelected: boolean,
+    user: WinnerUser
+  ) {
+    const userIndex = users.findIndex((u) => u.id == user.id);
+    const price =
+      userIndex > -1 ? report.proposals[userIndex].items[index].price : 0;
+    const quantity =
+      userIndex > -1 ? report.proposals[userIndex].items[index].quantidade : 0;
+    const item: CreatedDemandItem = {
+      user_id: isSelected ? user.id : "",
+      email: isSelected ? user.email : "",
+      codigo: winners[index].codigo,
+      description: report.items[index].nome,
+      quantity: quantity,
+      price: price,
+    };
+    onUpdateResult(item, index);
   }
 
   return (
     <>
-      <select
-        value={hiddenUsers}
-        multiple={true}
-        onChange={(e) => console.log(e.currentTarget.value)}
-      >
-        {users.map((u, i) => (
-          <option key={u.id} value={u.id}>
-            {u.email}
-          </option>
-        ))}
-      </select>
       <Tables>
         <THead>
           <tr>
@@ -84,10 +94,7 @@ export default function Datatable2({
                   index={i}
                   onSelection={handleSelection}
                 />
-                <WinnerColumns
-                  winner={winners[i]}
-                  lastPrice={report.items[i].ultimoPreco}
-                />
+                <WinnerColumns winner={winners[i]} item={report.items[i]} />
                 {report.proposals.map((p, ir) => {
                   if (hiddenUsers.includes(p.userId)) {
                     return (
@@ -126,18 +133,18 @@ function UserHeader({ hide }: { hide: boolean }) {
 
 function WinnerColumns({
   winner,
-  lastPrice,
+  item,
 }: {
   winner: Winner;
-  lastPrice: number;
+  item: QuotationRItems;
 }) {
-  const greater = winner.price > lastPrice;
+  const greater = winner.price > item.ultimoPreco;
   const style = greater ? ColumnStyle.yellow : ColumnStyle.green;
   return (
     <>
       <Column>{winner.codigo}</Column>
-      <Column>{winner.quantidade}</Column>
-      <Column>{lastPrice}</Column>
+      <Column>{item.quantidade}</Column>
+      <Column>{item.ultimoPreco}</Column>
       <td css={style}>{winner.price}</td>
     </>
   );
@@ -168,22 +175,34 @@ function SelectionColumns({
   selected,
   users,
   onSelection,
-  index
+  index,
 }: {
   selected: Winner;
   users: WinnerUser[];
   index: number;
-  onSelection(index: number, selected: boolean): void;
+  onSelection(index: number, selected: boolean, user: WinnerUser): void;
 }) {
   const [current, setCurrent] = useState<boolean>(false);
+  const [user, setUser] = useState({
+    id: selected.userId,
+    email: selected.userEmail,
+  });
   const currentStyle = current
     ? ButtonStyle.optionYes
     : ButtonStyle.noSelection;
 
-  function handleClick(){
-    setCurrent(!current);
-    onSelection(index, current)
+  function handleClick() {
+    const new_current = !current;
+    setCurrent(new_current);
+    onSelection(index, new_current, user);
   }
+
+  function handleIndex(ix: number) {
+    const newUser = { email: users[ix].email, id: users[ix].id };
+    setUser({ ...newUser });
+    onSelection(index, current, newUser);
+  }
+
   return (
     <>
       <WColumn>
@@ -192,7 +211,13 @@ function SelectionColumns({
         </button>
       </WColumn>
       <WColumn>
-        <select css={SelectorStyle} defaultValue={selected.userId}>
+        <select
+          css={SelectorStyle}
+          defaultValue={user.id}
+          onChange={(e) => {
+            handleIndex(e.target.options.selectedIndex);
+          }}
+        >
           {users.map((u, i) => (
             <option key={u.id} value={u.id}>
               {u.email}

@@ -34,7 +34,7 @@ export default function Tables() {
         email: "",
         codigo: w.codigo,
         description: quotationReport.items[i].nome,
-        quantity: 0,
+        quantity: quotationReport.items[i].quantidade,
         price: 0,
       };
     }),
@@ -49,7 +49,7 @@ export default function Tables() {
       ...aprovalResult,
       itens,
     });
-    console.log(console.log(aprovalResult.itens[index]));
+    console.log(item);
   }
 
   return (
