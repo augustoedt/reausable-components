@@ -49,11 +49,17 @@ export default function Tables() {
       ...aprovalResult,
       itens,
     });
-    console.log(item);
   }
 
   return (
     <>
+      <button
+        onClick={() => {
+          console.log(aprovalResult.itens);
+        }}
+      >
+        Send
+      </button>
       <Datatable2
         winners={winners}
         report={quotationReport}

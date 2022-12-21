@@ -237,24 +237,22 @@ const ButtonStyle = {
 };
 
 const ColumnStyle = {
-  yellow: tw`py-1 px-6 text-center bg-yellow-200`,
-  green: tw`py-1 px-6 text-center bg-green-200`,
-  winner: tw`py-1 px-6 text-center bg-slate-300`,
-  none: tw`py-1 px-6 text-center`,
+  yellow: tw`px-6 text-center bg-yellow-200`,
+  green: tw`px-6 text-center bg-green-200`,
+  winner: tw`px-6 text-center bg-slate-300`,
+  none: tw`px-6 text-center`,
   hidden: tw`hidden`,
 };
 
 const Tables = tw.table`rounded-t-lg overflow-clip`;
 const THead = tw.thead`border-b border-black bg-slate-200 uppercase text-sm `;
-const TBody = tw.tbody`border border-gray-200`;
 const Row = tw.tr`hover:bg-gray-100 border-b-2 border-gray-200 text-sm font-semibold bg-gray-50`;
-const HRow = tw.tr``;
-const HColumn = tw.th`px-4 py-1`;
-const HColumnStyle1 = tw`px-4 py-1 overflow-clip text-ellipsis`;
+const HColumn = tw.th`px-4`;
+const HColumnStyle1 = tw`px-4 overflow-clip text-ellipsis`;
 const HColumnStyle2 = { "max-width": "12em" };
 const HColumnColorStyle = {
   red: tw`bg-red-400`,
   green: tw`bg-green-300`,
 };
 const Column = tw.td`py-2 px-6 text-center`;
-const WColumn = tw.td`py-1 px-1 text-center`;
+const WColumn = tw.td`px-1 text-center`;
