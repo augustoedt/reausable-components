@@ -9,21 +9,21 @@ export function DataPagination({
   onPageChange,
 }: {
   current: number;
-  pages: IProduct[][];
+  pages: number;
   sibilings?: number;
   onPageChange(e: number): void;
 }) {
   const paginationRange = useMemo<(string | number)[]>(() => {
     // min of 3 elements |1| |2| ... [4]
     const indexes: (string | number)[] = [];
-    if (pages.length <= 2 + 2 * sibilings) {
-      for (let i = 0; i < pages.length; i++) {
+    if (pages <= 2 + 2 * sibilings) {
+      for (let i = 0; i < pages; i++) {
         indexes.push(i);
       }
       return indexes;
     }
     //
-    for (let i = 0; i < pages.length; i++) {
+    for (let i = 0; i < pages; i++) {
       if (i == 0 && i != current) indexes.push(i);
       if (i == 1 && i < current - sibilings) {
         indexes.push("...");
@@ -31,10 +31,10 @@ export function DataPagination({
       if (i < current && i > 0 && i >= current - sibilings) indexes.push(i);
       if (i == current) indexes.push(i);
       if (i <= current + sibilings && i > current) indexes.push(i);
-      if (!indexes.includes(i) && i == pages.length - 2) {
+      if (!indexes.includes(i) && i == pages - 2) {
         indexes.push("...");
       }
-      if (i == pages.length - 1 && i > current + sibilings) indexes.push(i);
+      if (i == pages - 1 && i > current + sibilings) indexes.push(i);
     }
     return indexes;
   }, [current, pages]);

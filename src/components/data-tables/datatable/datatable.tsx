@@ -163,7 +163,7 @@ export default function DataTable<T>({
     return (
       <DataPagination
         current={pagination.page}
-        pages={pages}
+        pages={pages.length}
         sibilings={2}
         onPageChange={handlePage}
       />
