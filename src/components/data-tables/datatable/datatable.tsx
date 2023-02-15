@@ -69,14 +69,14 @@ export default function DataTable<T>({
 
   const mainSelect = useRef<HTMLInputElement>(null);
 
-  useMemo(() => {
-    if (checked.length != filteredData.length) {
-      if (mainSelect.current) {
-        mainSelect.current.checked = false;
-        mainSelect.current.indeterminate = true;
-      }
-    }
-  }, [checked.length]);
+  // useMemo(() => {
+  //   if (checked.length != filteredData.length) {
+  //     if (mainSelect.current) {
+  //       mainSelect.current.checked = false;
+  //       mainSelect.current.indeterminate = true;
+  //     }
+  //   }
+  // }, [checked.length]);
 
   const handleAction = (
     action: string,

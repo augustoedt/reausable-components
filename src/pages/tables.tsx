@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Datatable2 from "../components/data-tables/datatable.v2/datatable.v2";
 import { getWinnerUsers } from "../components/data-tables/datatable.v2/datatable.v2.functions";
 import {
   QuotationResult,
@@ -18,11 +19,11 @@ export default function Tables() {
 
   const [selections, setSelection] = useState(selectionGroup);
 
-  const quotationReport: QuotationResult = report;
+  // const quotationReport: QuotationResult = report;
 
-  const winners: Winner[] = useMemo(() => {
-    return getWinnerUsers(report);
-  }, [report.id]);
+  // const winners: Winner[] = useMemo(() => {
+  //   return getWinnerUsers(report);
+  // }, [report.id]);
 
   // const initialResult: CreateDemand = {
   //   quotation_id: quotationReport.id,
@@ -70,8 +71,8 @@ export default function Tables() {
         headers={headers}
         data={tableData}
         key={"codigo"}
-        selectionGroup={selections}
-      />
+        selectionGroup={selections} 
+    />
       {/* <ToggleEditableCells dataset={tableData} /> */}
       {/* <DataGridInovua dataset={tableData} /> */}
       {/* <EditableSortedCells data={data} /> */}
